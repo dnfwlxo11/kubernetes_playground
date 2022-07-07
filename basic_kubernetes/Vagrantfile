@@ -2,53 +2,54 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-    N = 3 # max number of worker nodes
-    Ver = '1.18.4' # Kubernetes Version to install
+    # 쿠버네이스에서 작업할 워커 노드 수 설정
+    N = 2
+    # 쿠버네티스 버전 설정
+    Ver = '1.18.4'
 
     #=============#
     # Master Node #
     #=============#
-    config.vm.define "daein-k8s" do |cfg|
+    config.vm.define "daein-k8s-master" do |cfg|
         cfg.vm.box = "centos/7"
         cfg.vm.provider "virtualbox" do |vb|
-        vb.name = "daein-k8s"
-        vb.cpus = 2
-        vb.memory = 3072
-        vb.customize ["modifyvm", :id, "--groups", "/k8s-SgMST-1.13.1(github_SysNet4Admin)"]
+            vb.name = "daein-k8s-master"
+            vb.cpus = 2
+            vb.memory = 2048
+            vb.customize ["modifyvm", :id, "--groups", "/daein-k8s"]
         end
 
-        cfg.vm.host_name = "daein-k8s"
+        cfg.vm.host_name = "daein-k8s-master"
+        cfg.vm.network "public_network", ip: "192.168.0.125", host_name:true
         cfg.vm.network "private_network", ip: "192.168.1.10"
         cfg.vm.network "forwarded_port", guest: 22, host: 60000, auto_correct: true, id: "ssh"
-        cfg.vm.synced_folder "../data", "/vagrant", disabled: true 
+        cfg.vm.synced_folder "./data", "/vagrant", disabled: true 
         cfg.vm.provision "shell", path: "config.sh", args: N
+        # init_package.sh에 뒤의 Ver, "Main"을 인자로 넘김
         cfg.vm.provision "shell", path: "init_package.sh", args: [ Ver, "Main" ]
-        cfg.vm.provision "shell", path: "master_node.sh"
+        # cfg.vm.provision "shell", path: "master_node.sh"
     end
 
     #==============#
     # Worker Nodes #
     #==============#
-    (1..N).each do |i|
-        config.vm.define "daein-k8s-#{i}" do |cfg|
+    # (1..N).each do |i|
+    #     config.vm.define "daein-k8s-#{i}" do |cfg|
+    #         cfg.vm.box = "centos/7"
+    #         cfg.vm.provider "virtualbox" do |vb|
+    #             vb.name = "daein-k8s-#{i}"
+    #             vb.cpus = 1
+    #             vb.memory = 1024
+    #             vb.customize ["modifyvm", :id, "--groups", "/daein-k8s"]
+    #         end
 
-        cfg.vm.box = "centos/7"
-        cfg.vm.provider "virtualbox" do |vb|
-            vb.name = "daein-k8s-#{i}"
-            vb.cpus = 1
-            vb.memory = 1024
-            vb.customize ["modifyvm", :id, "--groups", "/daein-k8s"]
-        end
-
-        cfg.vm.host_name = "daein-k8s-#{i}"
-        cfg.vm.network "private_network", ip: "192.168.1.10#{i}"
-        cfg.vm.network "forwarded_port", guest: 22, host: "6000#{i}", auto_correct: true, id: "ssh"
-        cfg.vm.synced_folder "./data", "/vagrant", disabled: true
-        cfg.vm.provision "shell", path: "config.sh", args: N
-        cfg.vm.provision "shell", path: "init_package.sh", args: Ver
-        cfg.vm.provision "shell", path: "work_nodes.sh"
-
-        end
-    end
-
+    #         cfg.vm.host_name = "daein-k8s-#{i}"
+    #         cfg.vm.network "private_network", ip: "192.168.1.10#{i}"
+    #         cfg.vm.network "forwarded_port", guest: 22, host: "6000#{i}", auto_correct: true, id: "ssh"
+    #         cfg.vm.synced_folder "./data", "/vagrant", disabled: true
+    #         cfg.vm.provision "shell", path: "config.sh", args: N
+    #         cfg.vm.provision "shell", path: "init_package.sh", args: Ver
+    #         cfg.vm.provision "shell", path: "work_nodes.sh"
+    #     end
+    # end
 end

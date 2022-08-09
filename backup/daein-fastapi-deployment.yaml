@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: daein-fastapi
+  name: daein-fastapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: daein-fastapi
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/elastic: "true"
+        io.kompose.service: daein-fastapi
+    spec:
+      containers:
+        - env:
+            - name: TZ
+              value: Asia/Seoul
+          image: dnfwlxo11/daein-lyrics-fastapi:1.2.2
+          name: daein-fastapi
+          ports:
+            - containerPort: 8000
+          resources: {}
+      restartPolicy: Always
+status: {}

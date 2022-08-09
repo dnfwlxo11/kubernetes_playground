@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --volumes hostPath
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: daein-nodejs
+  name: daein-nodejs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: daein-nodejs
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert --volumes hostPath
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/elastic: "true"
+        io.kompose.service: daein-nodejs
+    spec:
+      containers:
+        - env:
+            - name: TZ
+              value: Asia/Seoul
+          image: dnfwlxo11/daein-lyrics-nodejs:1.2.2
+          name: daein-nodejs
+          ports:
+            - containerPort: 3000
+          resources: {}
+      restartPolicy: Always
+status: {}

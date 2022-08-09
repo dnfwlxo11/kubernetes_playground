@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: daein-elastic
+  name: daein-elastic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: daein-elastic
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/elastic: "true"
+        io.kompose.service: daein-elastic
+    spec:
+      containers:
+        - env:
+            - name: ES_JAVA_OPTS
+              value: -Xms512m -Xmx4g
+            - name: discovery.type
+              value: single-node
+          image: dnfwlxo11/daein-lyrics-elastic:1.2.0
+          name: daein-elastic
+          ports:
+            - containerPort: 9200
+            - containerPort: 9300
+          resources: {}
+      restartPolicy: Always
+status: {}

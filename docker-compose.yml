@@ -1,0 +1,88 @@
+version: '3'
+services:
+  daein-nodejs:
+    container_name: daein-nodejs
+    image: dnfwlxo11/daein-lyrics-nodejs:1.2.2
+    restart: always
+    environment:
+      - TZ=Asia/Seoul
+    ports:
+      - "3000:3000"
+    depends_on:
+      - daein-elastic
+      - daein-mariadb
+    networks:
+      - elastic
+  daein-fastapi:
+    container_name: daein-fastapi
+    image: dnfwlxo11/daein-lyrics-fastapi:1.2.3
+    restart: always
+    environment:
+      - TZ=Asia/Seoul
+    ports:
+      - "8000:8000"
+    networks:
+      - elastic
+  daein-mariadb:
+    container_name: daein-mariadb
+    image: dnfwlxo11/daein-lyrics-mariadb:1.2.0
+    restart: always
+    environment: 
+      - MYSQL_ROOT_PASSWORD=daein
+      - TZ=Asia/Seoul
+    ports:
+      - "3306:3306"
+    volumes:
+      - volumes/mariadb/app/db:/var/lib/mysql
+      - volumes/mariadb/app/backup:/backup
+      - volumes/mariadb/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - elastic
+  daein-elastic:
+    image: dnfwlxo11/daein-lyrics-elastic:1.2.0
+    restart: always
+    container_name: daein-elastic
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx4g"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - elastic
+  daein-kibana:
+    restart: always
+    image: dnfwlxo11/daein-lyrics-kibana:1.2.0
+    container_name: daein-kibana
+    ports:
+      - "5601:5601"
+    depends_on:
+      - daein-elastic
+    networks:
+      - elastic
+  daein-logstash:
+    image: dnfwlxo11/daein-lyrics-logstash:1.2.0
+    restart: always
+    container_name: daein-logstash
+    volumes:
+      - "volumes/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml"
+      - "volumes/logstash/config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf"
+      - "volumes/logstash/driver/mariadb-java-client-2.7.5.jar:/opt/logstash/vendor/jar/jdbc/mariadb-java-client-2.7.5.jar"
+    ports:
+      - "5001:5001"
+    depends_on:
+      - daein-elastic
+    networks:
+      - elastic
+
+volumes:
+  esdata01:
+    driver: local
+
+networks:
+  elastic:
+    driver: bridge

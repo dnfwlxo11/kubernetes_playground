@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --volumes hostPath
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: daein-mariadb
+  name: daein-mariadb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: daein-mariadb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert --volumes hostPath
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/elastic: "true"
+        io.kompose.service: daein-mariadb
+    spec:
+      containers:
+        - env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: daein
+            - name: TZ
+              value: Asia/Seoul
+          image: dnfwlxo11/daein-lyrics-mariadb:1.2.0
+          name: daein-mariadb
+          ports:
+            - containerPort: 3306
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: daein-mariadb-hostpath0
+            - mountPath: /backup
+              name: daein-mariadb-hostpath1
+            - mountPath: /docker-entrypoint-initdb.d/init.sql
+              name: daein-mariadb-hostpath2
+      restartPolicy: Always
+      volumes:
+        - hostPath:
+            path: /Users/daein/workspace-private/lyrics-player-k8s/lyrics-player/kompose/volumes/mariadb/app/db
+          name: daein-mariadb-hostpath0
+        - hostPath:
+            path: /Users/daein/workspace-private/lyrics-player-k8s/lyrics-player/kompose/volumes/mariadb/app/backup
+          name: daein-mariadb-hostpath1
+        - hostPath:
+            path: /Users/daein/workspace-private/lyrics-player-k8s/lyrics-player/kompose/volumes/mariadb/init.sql
+          name: daein-mariadb-hostpath2
+status: {}

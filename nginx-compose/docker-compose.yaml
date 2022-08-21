@@ -1,0 +1,21 @@
+version: '3'
+services:
+  daein-nginx:
+    container_name: daein-nginx
+    image: nginx:1.15-alpine
+    restart: always
+    ports:
+    - 80:80
+    - 443:443
+    volumes:
+    - ./config/nginx/conf.d:/etc/nginx/conf.d
+    - ./config/certbot/conf:/etc/letsencrypt
+    - ./config/certbot/www:/var/www/certbot
+
+  daein-certbot:
+    container_name: daein-certbot
+    image: certbot/certbot:v0.36.0
+    restart: always
+    volumes:
+      - ./config/certbot/conf:/etc/letsencrypt
+      - ./config/certbot/www:/var/www/certbot

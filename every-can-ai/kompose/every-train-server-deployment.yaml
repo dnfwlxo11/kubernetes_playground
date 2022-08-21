@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --volumes=hostPath
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: every-train-server
+  name: every-train-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: every-train-server
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert --volumes=hostPath
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: every-train-server
+    spec:
+      containers:
+        - env:
+            - name: BRANCH_NAME
+              value: master
+          image: dnfwlxo11/every-train-server:1.0.0
+          name: every-train-server
+          ports:
+            - containerPort: 5000
+          resources: {}
+          volumeMounts:
+            - mountPath: /app/train_server/models
+              name: every-train-server-hostpath0
+            - mountPath: /app/train_server/output
+              name: every-train-server-hostpath1
+            - mountPath: /app/train_server/db
+              name: every-train-server-hostpath2
+      restartPolicy: Always
+      volumes:
+        - hostPath:
+            path: /Users/daein/workspace-private/lyrics-player-k8s/every-can-ai/kompose/volumes/flask/app/models
+          name: every-train-server-hostpath0
+        - hostPath:
+            path: /Users/daein/workspace-private/lyrics-player-k8s/every-can-ai/kompose/volumes/flask/app/output
+          name: every-train-server-hostpath1
+        - hostPath:
+            path: /Users/daein/workspace-private/lyrics-player-k8s/every-can-ai/kompose/volumes/flask/app/db
+          name: every-train-server-hostpath2
+status: {}

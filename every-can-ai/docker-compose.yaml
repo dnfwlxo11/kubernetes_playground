@@ -1,0 +1,32 @@
+version: '3'
+services:
+  every-app-server:
+    image: dnfwlxo11/every-app-server:1.0.0
+    restart: always
+    container_name: every-app-server
+    ports:
+      - "4000:4000"
+    environment:
+      - BRANCH_NAME=master
+    volumes:
+      - volumes/nodejs/app/:/app/app_server/uploads
+  every-train-server:
+    image: dnfwlxo11/every-train-server:1.0.0
+    restart: always
+    container_name: every-train-server
+    ports:
+      - "5000:5000"
+    environment:
+      - BRANCH_NAME=master
+    volumes:
+      - volumes/flask/app/models:/app/train_server/models
+      - volumes/flask/app/output:/app/train_server/output
+      - volumes/flask/app/db:/app/train_server/db
+  every-redis-db:
+    image: dnfwlxo11/every-redis-db:1.0.0
+    restart: always
+    container_name: every-redis-db
+    ports:
+      - "6379:6379"
+    volumes:
+      - volumes/redis/app:/data

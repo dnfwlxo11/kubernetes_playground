@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --volumes=hostPath
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: every-redis-db
+  name: every-redis-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: every-redis-db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert --volumes=hostPath
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: every-redis-db
+    spec:
+      containers:
+        - image: dnfwlxo11/every-redis-db:1.0.0
+          name: every-redis-db
+          ports:
+            - containerPort: 6379
+          resources: {}
+          volumeMounts:
+            - mountPath: /data
+              name: every-redis-db-hostpath0
+      restartPolicy: Always
+      volumes:
+        - hostPath:
+            path: /Users/daein/workspace-private/lyrics-player-k8s/every-can-ai/kompose/volumes/redis/app
+          name: every-redis-db-hostpath0
+status: {}

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --volumes=hostPath
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: every-train-server
+  name: every-train-server
+spec:
+  ports:
+    - name: "every-train-server"
+      port: 5000
+      targetPort: 5000
+  selector:
+    io.kompose.service: every-train-server
+status:
+  loadBalancer: {}

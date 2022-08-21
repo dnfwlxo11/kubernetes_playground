@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --volumes=hostPath
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: every-app-server
+  name: every-app-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: every-app-server
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert --volumes=hostPath
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: every-app-server
+    spec:
+      containers:
+        - env:
+            - name: BRANCH_NAME
+              value: master
+          image: dnfwlxo11/every-app-server:1.0.0
+          name: every-app-server
+          ports:
+            - containerPort: 4000
+          resources: {}
+          volumeMounts:
+            - mountPath: /app/app_server/uploads
+              name: every-app-server-hostpath0
+      restartPolicy: Always
+      volumes:
+        - hostPath:
+            path: /Users/daein/workspace-private/lyrics-player-k8s/every-can-ai/kompose/volumes/nodejs/app
+          name: every-app-server-hostpath0
+status: {}

@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --volumes=hostPath
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: every-app-server
+  name: every-app-server
+spec:
+  type: NodePort
+  ports:
+    - name: 'every-app-server'
+      nodePort: 31000
+      port: 4000
+      targetPort: 4000
+      protocol: TCP
+  selector:
+    io.kompose.service: every-app-server
+status:
+  loadBalancer: {}

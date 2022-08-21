@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --volumes=hostPath
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: every-redis-db
+  name: every-redis-db
+spec:
+  ports:
+    - name: "every-redis-db"
+      port: 6379
+      targetPort: 6379
+  selector:
+    io.kompose.service: every-redis-db
+status:
+  loadBalancer: {}
